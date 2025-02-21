@@ -14,6 +14,16 @@ function App() {
   const handleSubmit = async() =>{
     try {
       const formData = new FormData()
+      formData.append('file', selectFile)
+
+      const res = await axios.post('http://loaclhost:3001/upload', formData,{
+        headers:{
+          'Content-Type' : 'multipart/form-data'
+        }
+      })
+
+      console.log(res.data)
+
     } catch (error) {
       console.log(error)
     }
