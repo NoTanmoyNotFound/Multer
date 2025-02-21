@@ -1,33 +1,42 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import './App.css'
 import axios from 'axios';
 
 function App() {
-  const [selectFile, setSelectFile] = useState(null)
+  const fileRef = useRef(null);
+  const [selectFile, setSelectFile] = useState(false);
 
 
   const handleFileChange = (e)=>{
-    console.log(e.target.files[0]) 
-    console.log(selectFile)
+    fileRef.current = e.target.files[0];
+    setSelectFile(true);
+    console.log("selected file: ",fileRef.current);
   }
 
-  const handleSubmit = async() =>{
-    try {
-      const formData = new FormData()
-      formData.append('file', selectFile)
-
-      const res = await axios.post('http://loaclhost:3001/upload', formData,{
-        headers:{
-          'Content-Type' : 'multipart/form-data'
-        }
-      })
-
-      console.log(res.data)
-
-    } catch (error) {
-      console.log(error)
+  const handleSubmit = async () => {
+    if (!fileRef.current) {
+        alert("Please select a file first!");
+        return;
     }
-  }
+
+    try {
+        const formData = new FormData();
+        formData.append("file", fileRef.current);
+
+        console.log("Sending file to backend...");
+
+        const res = await axios.post("http://localhost:3001/upload", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+
+        console.log("Server response:", res.data);
+        alert("File uploaded successfully!");
+    } catch (error) {
+        console.error("Upload failed:", error);
+    }
+};
 
   return (
     <>
